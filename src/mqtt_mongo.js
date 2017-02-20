@@ -1,10 +1,6 @@
 const mqtt = require('mqtt');
 const MongoClient = require('mongodb').MongoClient;
 
-const MQTT_URL = 'http://127.0.0.1:1883';
-const url  = 'mongodb://localhost:27017/myproject';
-
-
 const ConnectToMongoAndMqtt = (MQTT_URL, url) => {
   const client = mqtt.connect(MQTT_URL);
   console.log('client up here ', client);
@@ -50,12 +46,18 @@ const log_mqtt_message = mongo => (topic, message) => {
 };
 
 
-module.exports = () => ConnectToMongoAndMqtt(MQTT_URL, url).then((val) => {
-  console.log('connected');
-  const { mongoDb, client } = val;
-  client.subscribe('#');
-  client.on('message', log_mqtt_message(mongoDb));
-});
+module.exports = (mqtt_url, mongo_url) => {
+  const promise =  new Promise((resolve, reject) => {
+    ConnectToMongoAndMqtt(mqtt_url, mongo_url).then((val) => {
+      console.log('connected');
+      const { mongoDb, client } = val;
+      client.subscribe('#');
+      client.on('message', log_mqtt_message(mongoDb));
+      resolve(val);
+    }).catch(() => reject());
+  });
+  return promise;
+};
 
 
 
