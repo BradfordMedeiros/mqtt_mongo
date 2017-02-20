@@ -50,7 +50,7 @@ const log_mqtt_message = mongo => (topic, message) => {
 };
 
 
-ConnectToMongoAndMqtt(MQTT_URL, url).then((val) => {
+module.exports = () => ConnectToMongoAndMqtt(MQTT_URL, url).then((val) => {
   console.log('connected');
   const { mongoDb, client } = val;
   client.subscribe('#');
