@@ -41,12 +41,12 @@ logMqttToDatabase(mqtt_url, mongo_url).then(({ mongoDb, client  }) => {
   });
 
   app.get('/events', (req, res) => {
-    mongoDb.collection('events').find().toArray().then(val => res.jsonp(val)).catch(() => res.status(500));
+    mongoDb.collection('events').find().sort({ _id: -1 }).toArray().then(val => res.jsonp(val)).catch(() => res.status(500));
   });
 
   app.get('/events/:limit', (req, res) => {
     const limit = Number(req.params.limit);
-    mongoDb.collection('events').find().limit(limit).toArray().then(val => res.jsonp(val)).catch(() => res.status(500));
+    mongoDb.collection('events').find().limit(limit).sort({ _id: -1 }).toArray().then(val => res.jsonp(val)).catch(() => res.status(500));
   });
 
   app.listen(5000, function () {
