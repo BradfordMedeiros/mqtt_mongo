@@ -40,6 +40,15 @@ logMqttToDatabase(mqtt_url, mongo_url).then(({ mongoDb, client  }) => {
     mongoDb.collection('topics').find(query, options).toArray().then(val => res.jsonp(val)).catch(() => res.status(500));
   });
 
+  app.get('/events', (req, res) => {
+    mongoDb.collection('events').find().toArray().then(val => res.jsonp(val)).catch(() => res.status(500));
+  });
+
+  app.get('/events/:limit', (req, res) => {
+    const limit = Number(req.params.limit);
+    mongoDb.collection('events').find().limit(limit).toArray().then(val => res.jsonp(val)).catch(() => res.status(500));
+  });
+
   app.listen(5000, function () {
     console.log('mongo server start on port 5000!')
   });
