@@ -39,22 +39,38 @@ const ConnectToMongoAndMqtt = (MQTT_URL, url) => {
   return connectedToMongoAndMqtt;
 };
 
-const log_mqtt_message = mongo => (topic, message) => {
+const get_log_mqtt_message = mongo => (topic, message) => {
   mongo.collection('topics').insertOne({ topic, message: message.toString(), timestamp: new Date() });
 };
 
+const get_log_event = mongo => (topic, message) => {
+  const event_split = topic.split('/').filter(x => x.length > 0);
+  const isEvent = event_split[0] === 'event';
+  if (isEvent){
+    const event = topic;
+    mongo.collection('events').insertOne({ event, timestamp: (new Date()).toString() });
+  }
+};
 
 module.exports = (mqtt_url, mongo_url) => {
   const promise =  new Promise((resolve, reject) => {
     ConnectToMongoAndMqtt(mqtt_url, mongo_url).then((val) => {
       const { mongoDb, client } = val;
+      const log_mqtt_message = get_log_mqtt_message(mongoDb);
+      const log_event = get_log_event(mongoDb);
+
       client.subscribe('#');
-      client.on('message', log_mqtt_message(mongoDb));
+      client.on('message', (topic, message) => {
+        log_mqtt_message(topic, message);
+        log_event(topic, message);
+      });
       resolve(val);
     }).catch(() => reject());
   });
   return promise;
 };
+
+
 
 
 
