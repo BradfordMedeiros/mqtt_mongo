@@ -14,7 +14,7 @@ const mqtt_mongo = require('mqtt_mongo');
 
 const config = {
   MQTT_URL : 'http://127.0.0.1:1883', 
-  MONGO_URL: 'mongodb://localhost:27017/databaseName' }
+  MONGO_URL: 'mongodb://localhost:27017/databaseName' 
 }
 
 mqtt_mongo.logMqttToMongo(config);
