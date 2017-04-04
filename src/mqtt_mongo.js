@@ -3,6 +3,7 @@ const MongoClient = require('mongodb').MongoClient;
 
 const ConnectToMongoAndMqtt = (MQTT_URL, url) => {
   const client = mqtt.connect(MQTT_URL);
+
   let mongoConnectionResolver;
   let mqttConnectionResolver;
   const waitForMongoConnection = new Promise((resolve, reject) => {
@@ -69,10 +70,6 @@ module.exports = (mqtt_url, mongo_url) => {
   });
   return promise;
 };
-
-
-
-
 
 
 
