@@ -21,8 +21,8 @@ const ConnectToMongoAndMqtt = (MQTT_URL, url) => {
     mqttConnectionResolver();
   });
 
-  client.on('error', () => {
-    mqttConnectionRejector();
+  client.on('error', (err) => {
+    mqttConnectionRejector(err);
   });
 
   let mongoDb;
@@ -44,8 +44,7 @@ const ConnectToMongoAndMqtt = (MQTT_URL, url) => {
         mongoDb,
         client,
       })
-    }).catch(() => {
-      console.log('could not create mongo mqtt connection');
+    }).catch((err) => {
       reject(err);
     });
   });
@@ -73,14 +72,13 @@ module.exports = (mqtt_url, mongo_url) => {
       const log_mqtt_message = get_log_mqtt_message(mongoDb);
       const log_event = get_log_event(mongoDb);
 
-      mm = mongoDb;
       client.subscribe('#');
       client.on('message', (topic, message) => {
         log_mqtt_message(topic, message);
         log_event(topic, message);
       });
       resolve(val);
-    }).catch(() => reject());
+    }).catch(reject);
   });
   return promise;
 };
